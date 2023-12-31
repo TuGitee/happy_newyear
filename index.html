@@ -52,6 +52,52 @@
             animation: write 1s infinite both;
         }
 
+        .icon-loading {
+            margin: 0 5px;
+            animation: rotate 1s infinite linear;
+            display: inline-block;
+            height: 1em;
+            vertical-align: middle;
+            width: 1em;
+            background-color: #fff;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .icon-loading::before {
+            content: "";
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background-color: #000;
+            top: 50%;
+            left: 50%;
+        }
+
+        .icon-loading::after {
+            content: "";
+            position: absolute;
+            display: inline-block;
+            height: 0.6em;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0.6em;
+            background-color: #000;
+            border-radius: 50%;
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotate(0);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
         @keyframes write {
             0% {
                 opacity: 0;
@@ -78,7 +124,9 @@
             <template #footer>
                 <p>新年快乐 🎉</p>
                 <!-- <p>有<span id="busuanzi_value_site_uv">Loading...</span>人次访问过这里 👀</p> -->
-                <p>有<span id="busuanzi_value_site_pv">Loading...</span>人👀 看过烟花 🎇</p>
+                <p>有<span id="busuanzi_value_site_pv">
+                        <i class="icon-loading"></i>
+                    </span>人👀 看过烟花 🎇</p>
                 <p class="write">祝<span>{{sentences[index].slice(0, current)}}</span></p>
             </template>
         </flip-clock>
