@@ -1,5 +1,10 @@
 <head>
-    <meta name="viewport" content="width=device-width">
+    <meta name="viewport"
+        content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0; height=device-height; minimum-scale=1">
+    </meta>
+    <meta charset="utf-8">
+    </meta>
+    <meta name="theme-color" content="#000">
     </meta>
     <title>新年快乐</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
@@ -7,12 +12,57 @@
     <style>
         * {
             user-select: none;
-            margin: 0
+            margin: 0;
         }
 
-        body {
+        body,
+        html {
             overflow: hidden;
-            background-color: #2b2b2b;
+            background-color: #000;
+            height: 100vh;
+            width: 100vw;
+            color-scheme: dark;
+        }
+
+        #n {
+            position: absolute;
+            inset: 0;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        #app {
+            pointer-events: none;
+        }
+
+        #app .clock-box {
+            line-height: 1.8;
+            gap: 0.8vmin;
+        }
+
+        p.write::after {
+            content: "";
+            height: 1em;
+            width: 0.5em;
+            vertical-align: -0.15em;
+            margin-left: 0.2em;
+            background-color: white;
+            display: inline-block;
+            animation: write 1s infinite both;
+        }
+
+        @keyframes write {
+            0% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
         }
     </style>
 </head>
@@ -20,21 +70,106 @@
 <body>
     <canvas id="n"></canvas>
     <div id="app">
-        <flip-clock :formatter="formatter" deadline="2024/1/1" center size="fit" event="2024年">
+        <flip-clock :formatter="formatter" deadline="2024/1/1" center size="fit">
+            <template #header>
+                <h1>距离 2024年 还有</h1>
+            </template>
+            <template #footer>
+                <p>新年快乐 🎉</p>
+                <p>您是第{{visits}}个看到烟花的人 🎇</p>
+                <p class="write">希望您在新的一年里<span>{{sentences[index].slice(0, current)}}</span></p>
+            </template>
         </flip-clock>
     </div>
+
+    <script>
+        function setCookie(name, value, expires, path, domain, secure) {
+            var curCookie = name + "=" + escape(value) +
+                ((expires) ? "; expires=" + expires.toGMTString() : "") +
+                ((path) ? "; path=" + path : "") +
+                ((domain) ? "; domain=" + domain : "") +
+                ((secure) ? "; secure" : "")
+            if ((name + "=" + escape(value)).length <= 4000)
+                document.cookie = curCookie
+            else
+                if (confirm("Cookie exceeds 4KB and will be cut!"))
+                    document.cookie = curCookie
+        }
+        function getCookie(name) {
+            var prefix = name + "="
+            var cookieStartIndex = document.cookie.indexOf(prefix)
+            if (cookieStartIndex == -1)
+                return null
+            var cookieEndIndex = document.cookie.indexOf(";", cookieStartIndex + prefix.length)
+            if (cookieEndIndex == -1)
+                cookieEndIndex = document.cookie.length
+            return unescape(document.cookie.substring(cookieStartIndex + prefix.length, cookieEndIndex))
+        }
+        function deleteCookie(name, path, domain) {
+            if (getCookie(name)) {
+                document.cookie = name + "=" +
+                    ((path) ? "; path=" + path : "") +
+                    ((domain) ? "; domain=" + domain : "") +
+                    "; expires=Thu, 01-Jan-70 00:00:01 GMT"
+            }
+        }
+    </script>
     <script>
         new Vue({
             el: '#app',
+            data() {
+                return {
+                    visits: 0,
+                    sentences: ["龙行龘龘", "万事兴“龙”", "逾跃龙门", "“龙”光焕发", "欣欣向“龙”", "龙年大吉，万事如意！"],
+                    index: 0,
+                    current: 0,
+                    isWrite: true,
+                }
+            },
             computed: {
                 formatter() {
                     const days = Math.abs(new Date().getTime() - new Date("2024/1/1"))
                     const length = parseInt(days / 1000 / 60 / 60 / 24).toString().length
                     return (length ? '' : 'D'.repeat(length) + '天 ') + 'HH时II分SS秒'
                 }
+            },
+            mounted() {
+                setInterval(() => {
+                    if (this.isWrite && this.current < this.sentences[this.index].length) {
+                        this.current++
+                    } else if (!this.isWrite && this.current > 0) {
+                        this.current--
+                    } else if (this.current === this.sentences[this.index].length) {
+                        this.isWrite = !this.isWrite
+                    } else {
+                        this.index = (this.index + 1) % this.sentences.length
+                        this.current = 0
+                        this.isWrite = !this.isWrite
+                    }
+                }, 300)
+
+
+                function fixDate(date) {
+                    let base = new Date(0)
+                    let skew = base.getTime()
+                    if (skew > 0)
+                        date.setTime(date.getTime() - skew)
+                }
+                var now = new Date()
+                fixDate(now)
+                now.setTime(now.getTime() + 365 * 24 * 60 * 60 * 1000)
+                let visits = getCookie("counter")
+                this.visits = visits ? parseInt(visits) + 1 : 1
+                setCookie("counter", visits, now)
             }
         })
     </script>
 </body>
 
-<script>g = window; s = g.addEventListener; j = Math.random; let n, m, w, h, v = [], p = 0.02, xp, yp; g.f = g.webkitRequestAnimationFrame || g.mozRequestAnimationFrame || g.oRequestAnimationFrame || g.msRequestAnimationFrame || function (c) { g.setTimeout(c, 16) }; l(); function l() { n = document.getElementById("n"); s("resize", r); m = n.getContext("2d"); r(); g.f(b); s('click', fc) } function r() { if (!!n) { w = n.width = g.innerWidth; h = n.height = g.innerHeight } } function fc(e) { xp = e.pageX; yp = e.pageY; cf(xp, yp) } function b() { u(); d(); g.f(b) } function u() { if (v.length < n.width && j() < p) cf(); let a = []; for (let i = 0; i < v.length; i++) { if (v[i].m()) a.push(v[i]) } v = a } function d() { m.globalCompositeOperation = 'source-over'; m.fillStyle = "rgba(0,0,0,.2)"; m.fillRect(0, 0, w, h); m.globalCompositeOperation = 'lighter'; for (let i = 0; i < v.length; i++) { v[i].d(m) } } function cf(x, y) { xp = x || j() * (w - 200) + 100; yp = y || j() * (h - 200) + 100; let e = j() * 50 + 100; let c = "rgb(" + ~~(j() * 200 + 55) + "," + ~~(j() * 200 + 55) + "," + ~~(j() * 200 + 55) + ")"; for (let i = 0; i < e; i++) { let o = new Pt(); o.c = c; let vy = Math.sqrt(25 - o.vx * o.vx); if (Math.abs(o.vy) > vy) { o.vy = o.vy > 0 ? vy : -vy } v.push(o) } } class Pt { g = .08; constructor() { this.w = this.h = j() * 4 + 1; this.x = xp - this.w / 2; this.y = yp - this.h / 2; this.vx = (j() - .5) * 10; this.vy = (j() - .5) * 10; this.t = j() * .5 + .5; this.c }; m() { this.x += this.vx; this.vy += this.g; this.y += this.vy; this.t -= .01; if (this.x <= -this.w || this.x >= n.width || this.y >= n.height || this.t <= 0) return false; return true }; d(c) { c.save(); c.beginPath(); c.translate(this.x + this.w / 2, this.y + this.h / 2); c.arc(0, 0, this.w, 0, Math.PI * 2); c.fillStyle = this.c; c.globalAlpha = this.t; c.closePath(); c.fill(); c.restore() } }</script>
+<script>
+    document.addEventListener('touchstart', function (event) {
+        event.preventDefault()
+    })
+</script>
+
+<script>g = window; s = g.addEventListener; j = (min = 0, max = 1) => Math.random() * (max - min) + min; let n, m, w, h, v = [], p = j(0.02, 0.08), xp, yp; g.f = g.webkitRequestAnimationFrame || g.mozRequestAnimationFrame || g.oRequestAnimationFrame || g.msRequestAnimationFrame || function (c) { g.setTimeout(c, 16) }; l(); function l() { n = document.getElementById("n"); s("resize", r); m = n.getContext("2d"); r(); g.f(b); s('click', fc); s('touchstart', fc); } function r() { if (!!n) { w = n.width = g.innerWidth; h = n.height = g.innerHeight } } function fc(e) { xp = e.pageX; yp = e.pageY; cf(xp, yp) } function b() { u(); d(); g.f(b) } function u() { if (v.length < n.width && j() < p) cf(); let a = []; for (let i = 0; i < v.length; i++) { if (v[i].m()) a.push(v[i]) } v = a } function d() { m.globalCompositeOperation = 'source-over'; m.fillStyle = "rgba(0,0,0,.2)"; m.fillRect(0, 0, w, h); m.globalCompositeOperation = 'lighter'; for (let i = 0; i < v.length; i++) { v[i].d(m) } } function cf(x, y) { xp = x || j() * (w - 200) + 100; yp = y || j() * (h - 200) + 100; let e = j() * 50 + 100; let c = "rgb(" + ~~(j() * 200 + 55) + "," + ~~(j() * 200 + 55) + "," + ~~(j() * 200 + 55) + ")"; for (let i = 0; i < e; i++) { let o = new Pt(); o.c = c; let vy = Math.sqrt(25 - o.vx * o.vx); if (Math.abs(o.vy) > vy) { o.vy = o.vy > 0 ? vy : -vy } v.push(o) } } class Pt { g = .08; constructor() { this.w = this.h = j(2, 4); this.x = xp - this.w / 2; this.y = yp - this.h / 2; this.vx = (j() - .5) * 10; this.vy = (j() - .5) * 10; this.t = j() * .5 + .5; this.c }; m() { this.x += this.vx; this.vy += this.g; this.y += this.vy; this.t -= .01; if (this.x <= -this.w || this.x >= n.width || this.y >= n.height || this.t <= 0) return false; return true }; d(c) { c.save(); c.beginPath(); c.translate(this.x + this.w / 2, this.y + this.h / 2); c.arc(0, 0, this.w, 0, Math.PI * 2); c.fillStyle = this.c; c.globalAlpha = this.t; c.closePath(); c.fill(); c.restore() } }</script>
