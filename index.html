@@ -159,7 +159,7 @@
                 fixDate(now)
                 now.setTime(now.getTime() + 365 * 24 * 60 * 60 * 1000)
                 let visits = getCookie("counter")
-                this.visits = visits !== 'null' && visits ? parseInt(visits) + 1 : 1
+                this.visits = visits ? parseInt(visits) + 1 : 1
                 setCookie("counter", this.visits, now)
             }
         })
@@ -172,4 +172,95 @@
     })
 </script>
 
-<script>g = window; s = g.addEventListener; j = (min = 0, max = 1) => Math.random() * (max - min) + min; let n, m, w, h, v = [], p = j(0.02, 0.08), xp, yp; g.f = g.webkitRequestAnimationFrame || g.mozRequestAnimationFrame || g.oRequestAnimationFrame || g.msRequestAnimationFrame || function (c) { g.setTimeout(c, 16) }; l(); function l() { n = document.getElementById("n"); s("resize", r); m = n.getContext("2d"); r(); g.f(b); s('click', fc); s('touchstart', fc); } function r() { if (!!n) { w = n.width = g.innerWidth; h = n.height = g.innerHeight } } function fc(e) { xp = e.pageX; yp = e.pageY; cf(xp, yp) } function b() { u(); d(); g.f(b) } function u() { if (v.length < n.width && j() < p) cf(); let a = []; for (let i = 0; i < v.length; i++) { if (v[i].m()) a.push(v[i]) } v = a } function d() { m.globalCompositeOperation = 'source-over'; m.fillStyle = "rgba(0,0,0,.2)"; m.fillRect(0, 0, w, h); m.globalCompositeOperation = 'lighter'; for (let i = 0; i < v.length; i++) { v[i].d(m) } } function cf(x, y) { xp = x || j() * (w - 200) + 100; yp = y || j() * (h - 200) + 100; let e = j() * 50 + 100; let c = "rgb(" + ~~(j() * 200 + 55) + "," + ~~(j() * 200 + 55) + "," + ~~(j() * 200 + 55) + ")"; for (let i = 0; i < e; i++) { let o = new Pt(); o.c = c; let vy = Math.sqrt(25 - o.vx * o.vx); if (Math.abs(o.vy) > vy) { o.vy = o.vy > 0 ? vy : -vy } v.push(o) } } class Pt { g = .08; constructor() { this.w = this.h = j(2, 4); this.x = xp - this.w / 2; this.y = yp - this.h / 2; this.vx = (j() - .5) * 10; this.vy = (j() - .5) * 10; this.t = j() * .5 + .5; this.c }; m() { this.x += this.vx; this.vy += this.g; this.y += this.vy; this.t -= .01; if (this.x <= -this.w || this.x >= n.width || this.y >= n.height || this.t <= 0) return false; return true }; d(c) { c.save(); c.beginPath(); c.translate(this.x + this.w / 2, this.y + this.h / 2); c.arc(0, 0, this.w, 0, Math.PI * 2); c.fillStyle = this.c; c.globalAlpha = this.t; c.closePath(); c.fill(); c.restore() } }</script>
+<script>
+    const getRandom = (min = 0, max = 1) => Math.random() * (max - min) + min;
+    let n = document.getElementById("n"), m = n.getContext("2d"), w, h, v = [], p = getRandom(0.02, 0.08), xp, yp;
+    window.animationFrame = window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || window.requestAnimationFrame || function (c) { setTimeout(c, 16) };
+    init();
+    function init() {
+        window.addEventListener("resize", resize);
+        resize();
+        window.animationFrame(draw);
+        window.addEventListener('click', fc);
+        window.addEventListener('touchstart', fc);
+    }
+    function resize() {
+        if (!!n) {
+            w = n.width = window.innerWidth;
+            h = n.height = window.innerHeight
+        }
+    }
+    function fc(e) {
+        xp = e.pageX;
+        yp = e.pageY;
+        cf(xp, yp)
+    }
+    function draw() {
+        u();
+        d();
+        window.animationFrame(draw)
+    }
+    function u() {
+        if (v.length < n.width && getRandom() < p) cf();
+        let a = [];
+        for (let i = 0; i < v.length; i++) {
+            if (v[i].m())
+                a.push(v[i])
+        }
+        v = a
+    }
+    function d() {
+        m.globalCompositeOperation = 'source-over';
+        m.fillStyle = "rgba(0,0,0,.2)";
+        m.fillRect(0, 0, w, h);
+        m.globalCompositeOperation = 'lighter';
+        for (let i = 0; i < v.length; i++) {
+            v[i].d(m)
+        }
+    }
+    function cf(x, y) {
+        xp = x || getRandom() * (w - 200) + 100;
+        yp = y || getRandom() * (h - 200) + 100;
+        let e = getRandom() * 50 + 100;
+        let c = "rgb(" + ~~(getRandom() * 200 + 55) + "," + ~~(getRandom() * 200 + 55) + "," + ~~(getRandom() * 200 + 55) + ")";
+        for (let i = 0; i < e; i++) {
+            let o = new Pt();
+            o.c = c;
+            let vy = Math.sqrt(25 - o.vx * o.vx);
+            if (Math.abs(o.vy) > vy) {
+                o.vy = o.vy > 0 ? vy : -vy
+            }
+            v.push(o)
+        }
+    }
+    class Pt {
+        g = .08;
+        constructor() {
+            this.w = this.h = getRandom(2, 4);
+            this.x = xp - this.w / 2;
+            this.y = yp - this.h / 2;
+            this.vx = getRandom(-5, 5);
+            this.vy = getRandom(-5, 5);
+            this.t = getRandom(0.75, 1);
+            this.c
+        };
+        m() {
+            this.x += this.vx;
+            this.vy += this.g;
+            this.y += this.vy;
+            this.t -= .01;
+            if (this.x <= -this.w || this.x >= n.width || this.y >= n.height || this.t <= 0) return false;
+            return true
+        };
+        d(c) {
+            c.save();
+            c.beginPath();
+            c.translate(this.x + this.w / 2, this.y + this.h / 2);
+            c.arc(0, 0, this.w, 0, Math.PI * 2);
+            c.fillStyle = this.c;
+            c.globalAlpha = this.t;
+            c.closePath();
+            c.fill()
+            c.restore()
+        }
+    }</script>
