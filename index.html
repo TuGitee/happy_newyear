@@ -77,8 +77,9 @@
             </template>
             <template #footer>
                 <p>新年快乐 🎉</p>
+                <!-- <p>有<span id="busuanzi_value_site_pv">Loading...</span>人次访问过这里 👀</p> -->
                 <p>有<span id="busuanzi_value_site_uv">Loading...</span>人👀 看过烟花 🎇</p>
-                <p class="write">希望您在新的一年里<span>{{sentences[index].slice(0, current)}}</span></p>
+                <p class="write">祝<span>{{sentences[index].slice(0, current)}}</span></p>
             </template>
         </flip-clock>
     </div>
@@ -88,7 +89,7 @@
             el: '#app',
             data() {
                 return {
-                    sentences: ["龙行龘龘", "万事兴“龙”", "逾跃龙门", "“龙”光焕发", "欣欣向“龙”", "龙年大吉，万事如意！"],
+                    sentences: ["张嘉懿新年快乐🎊", "您在新的一年里龙行龘龘", "您在新的一年里万事兴“龙”", "您在新的一年里逾跃龙门", "您在新的一年里“龙”光焕发", "您在新的一年里欣欣向“龙”", "您在新的一年里龙年大吉，万事如意！"],
                     index: 0,
                     current: 0,
                     isWrite: true,
@@ -104,9 +105,19 @@
             mounted() {
                 setInterval(() => {
                     if (this.isWrite && this.current < this.sentences[this.index].length) {
-                        this.current++
+                        const codePoint = this.sentences[this.index].codePointAt(this.current)
+                        if (codePoint >= 0xffff) {
+                            this.current += 2
+                        } else {
+                            this.current++
+                        }
                     } else if (!this.isWrite && this.current > 0) {
-                        this.current--
+                        const codePoint = this.sentences[this.index].codePointAt(this.current - 2)
+                        if (codePoint >= 0xffff) {
+                            this.current -= 2
+                        } else {
+                            this.current--
+                        }
                     } else if (this.current === this.sentences[this.index].length) {
                         this.isWrite = !this.isWrite
                     } else {
@@ -217,5 +228,4 @@
             c.fill()
             c.restore()
         }
-    }
-</script>
+    }</script>
