@@ -181,7 +181,7 @@
 <script>
     document.addEventListener('touchstart', function (event) {
         event.preventDefault()
-    })
+    }, { passive: false })
 </script>
 
 <script>
@@ -203,9 +203,12 @@
         }
     }
     function fc(e) {
-        xp = e.pageX;
-        yp = e.pageY;
-        cf(xp, yp)
+        if (v.length > n.width * 2) {
+            return;
+        }
+        xp = e.pageX || e.touches[0].pageX;
+        yp = e.pageY || e.touches[0].pageY;
+        cf(xp, yp);
     }
     function draw() {
         u();
@@ -275,4 +278,5 @@
             c.fill()
             c.restore()
         }
-    }</script>
+    }
+</script>
